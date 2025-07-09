@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FastScale</title>
+  <link rel="stylesheet" href="static/style.css" />
+  <script>
+    const SESSION_ID = "{{ session_id }}";
+  </script>
+</head>
+<body>
+  <header>
+    <h1>FastScale</h1>
+  </header>
+
+  <main>
+    <div class="filters">
+      <label>Responses:</label>
+      <button id="toggle-https">HTTPS</button>
+      <button id="toggle-wss">WSS</button>
+    </div>
+
+    <div id="responses" class="responses"></div>
+
+    <form id="https-form">
+      <label for="https-input">HTTPS</label>
+      <input type="text" id="https-input" maxlength="140" required />
+      <button type="submit">Send HTTP</button>
+    </form>
+
+    <form id="ws-form">
+      <label for="ws-input">Websockets</label>
+      <input type="text" id="ws-input" maxlength="140" required />
+      <button type="submit">Send WS</button>
+    </form>
+
+    <form id="h2w-form">
+      <label for="h2w-input">Send with HTTPS, receive with WSS</label>
+      <input type="text" id="h2w-input" maxlength="140" required />
+      <button type="submit">Send</button>
+    </form>
+
+  </main>
+
+  <script src="static/script.js"></script>
+</body>
+</html>
