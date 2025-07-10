@@ -58,6 +58,9 @@ button:hover {
   padding: 0.5rem;
   text-align: left;
   font-size: 0.9rem;
+}
+
+#connections {
   margin-bottom: 2rem;
 }
 

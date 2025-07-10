@@ -1,7 +1,7 @@
 console.log(SESSION_ID)
 const apiUrl = "http://localhost:8000/submit/" + SESSION_ID;
 const wsUrl = "ws://localhost:8000/ws/" + SESSION_ID;
-const h2wUrl = "http://localhost:8000/http-to-ws/" + SESSION_ID;
+const baseUrl = "http://localhost:8000/"
 
 let ws;
 let reconnectDelay = 1000;
@@ -64,11 +64,36 @@ httpsForm.addEventListener("submit", async (e) => {
   input.value = "";
 });
 
+wsForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const input = document.getElementById("ws-input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ text, op: 'echo' }));
+  } else {
+    console.error("WebSocket not connected.");
+  }
+
+  input.value = "";
+});
+
 h2wForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const input = document.getElementById("h2w-input");
   const text = input.value.trim();
   if (!text) return;
+
+  const clickedButton = e.submitter?.value;
+
+  let h2wUrl;
+
+  if (clickedButton === "without-redis") {
+    h2wUrl = "without-redis/" + SESSION_ID;
+  } else {
+    h2wUrl = "with-redis/" + SESSION_ID;
+  }
 
   try {
     const response = await fetch(h2wUrl, {
@@ -81,21 +106,6 @@ h2wForm.addEventListener("submit", async (e) => {
     addMessage("https", result.text);
   } catch (err) {
     console.error("HTTP error:", err);
-  }
-
-  input.value = "";
-});
-
-wsForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const input = document.getElementById("ws-input");
-  const text = input.value.trim();
-  if (!text) return;
-
-  if (ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ text, op: 'echo' }));
-  } else {
-    console.error("WebSocket not connected.");
   }
 
   input.value = "";
@@ -129,6 +139,17 @@ function connectWebSocket() {
     const data = JSON.parse(event.data);
     if (data?.text) {
       addMessage("wss", data.text);
+    } else if (data?.websocket_pid) {
+      const pid = data.websocket_pid;
+
+      const span = document.getElementById("ws-pid");
+
+      if (pid) {
+        span.textContent = "Ws connection pid: " + pid;
+        span.style.display = "inline";  // or "block" depending on layout
+      } else {
+        span.style.display = "none";
+      }
     }
   };
 

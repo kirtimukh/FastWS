@@ -22,6 +22,11 @@
     </div>
 
     <div id="responses" class="responses"></div>
+    <div id="connections">
+      <label> Connections</label>
+      <span>client_id: {{session_id}}</span>
+      <span id="ws-pid">Ws connection pid: </span>
+    </div>
 
     <form id="https-form">
       <label for="https-input">HTTPS</label>
@@ -38,7 +43,8 @@
     <form id="h2w-form">
       <label for="h2w-input">Send with HTTPS, receive with WSS</label>
       <input type="text" id="h2w-input" maxlength="140" required />
-      <button type="submit">Send</button>
+      <button type="submit" name="action" value="without-redis">Send</button>
+      <button type="submit" name="action" value="with-redis">Send to Redis</button>
     </form>
 
   </main>

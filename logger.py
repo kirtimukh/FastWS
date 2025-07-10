@@ -1,4 +1,4 @@
-import logging
+import os, logging
 from logging.config import dictConfig
 
 
@@ -8,6 +8,7 @@ class DevConfig:
     LOG_LEVEL: str = "DEBUG"
     DATE_FORMAT: str = "%Y-%m-%d %H:%M:%S"
     LOG_FILE: str = "records.log"
+    TXT_ONLY_FORMAT = "%(message)s"
 
 
 class ToLogHandler(logging.Handler):
@@ -28,7 +29,7 @@ dictConfig(
         "formatters": {
             "default": {
                 "()": "uvicorn.logging.DefaultFormatter",
-                "fmt": DevConfig.LOG_FORMAT,
+                "fmt": DevConfig.TXT_ONLY_FORMAT,
                 "datefmt": DevConfig.DATE_FORMAT,
             }
         },
@@ -60,3 +61,14 @@ def get_logger(service_name="default"):
     padded_name = service_name.ljust(NAME_LENGTH)
     logger = logging.LoggerAdapter(stdlogger, {"service": padded_name})
     return logger
+
+
+logger = get_logger()
+
+
+def write_to_log(method, client_id, text):
+    method = method.ljust(10)
+    pid = str(os.getpid())
+    pid = pid.ljust( len(pid)+1 )
+
+    logger.info(f"{method}| client [{client_id}] | {pid} : {text}")
