@@ -1,7 +1,7 @@
-import os, json
+import json
 from fastapi import WebSocket
-from logger import get_logger, write_to_log
-from settings import APP_ID
+from app.logger import get_logger, write_to_log
+from app.settings import APP_ID
 
 
 logger = get_logger(__name__)

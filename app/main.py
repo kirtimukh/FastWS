@@ -12,11 +12,11 @@ from fastapi.templating import Jinja2Templates
 
 import redis.asyncio
 
-from models import DataIn
-from wsmanager import wsmanager
+from app.models import DataIn
+from app.wsmanager import wsmanager
 
-from logger import get_logger, write_to_log
-from settings import APP_ID
+from app.logger import get_logger, write_to_log
+from app.settings import APP_ID
 
 
 logger = get_logger(__name__)
@@ -79,9 +79,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="app/templates")
 
 
 @app.get("/", response_class=HTMLResponse)

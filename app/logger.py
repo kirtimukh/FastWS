@@ -1,6 +1,6 @@
 import logging
 from logging.config import dictConfig
-from settings import APP_ID
+from app.settings import APP_ID
 
 
 class DevConfig:
