@@ -1,19 +1,23 @@
 import os, json
 from fastapi import WebSocket
 from logger import get_logger, write_to_log
+from settings import APP_ID
+
 
 logger = get_logger(__name__)
 
 
 class ConnectionManager:
     def __init__(self):
+        """
+        All connections are store here as pairs of client_id : [wsConnection, ...]
+        """
         self.active_connections: dict = {}
-        self.pid = os.getpid()
 
     async def connect(self, websocket: WebSocket, client_id: str):
         await websocket.accept()
 
-        logger.info(f"wsmanager | Client [{client_id}] connected to pid-{self.pid}")
+        logger.info(f"wsmanager | Client [{client_id}] connected to {APP_ID}")
     
         if client_id in self.active_connections:
             self.active_connections[client_id].append(websocket)
@@ -30,7 +34,7 @@ class ConnectionManager:
     async def send_message(self, client_id: str, message: str | None = None):
         write_to_log("wsmanager", client_id, message)
         if message is None:
-            msgdata = json.dumps({"websocket_pid": self.pid})
+            msgdata = json.dumps({"websocket_pid": APP_ID})
         else:
             msgdata = json.dumps({'text': message})
 

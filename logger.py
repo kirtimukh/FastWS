@@ -1,5 +1,6 @@
-import os, logging
+import logging
 from logging.config import dictConfig
+from settings import APP_ID
 
 
 class DevConfig:
@@ -68,7 +69,6 @@ logger = get_logger()
 
 def write_to_log(method, client_id, text):
     method = method.ljust(10)
-    pid = str(os.getpid())
-    pid = pid.ljust( len(pid)+1 )
+    pid = APP_ID.ljust(6)
 
     logger.info(f"{method}| client [{client_id}] | {pid} : {text}")

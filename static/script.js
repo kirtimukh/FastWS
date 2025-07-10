@@ -1,7 +1,4 @@
 console.log(SESSION_ID)
-const apiUrl = "http://localhost:8000/submit/" + SESSION_ID;
-const wsUrl = "ws://localhost:8000/ws/" + SESSION_ID;
-const baseUrl = "http://localhost:8000/"
 
 let ws;
 let reconnectDelay = 1000;
@@ -49,7 +46,7 @@ httpsForm.addEventListener("submit", async (e) => {
   if (!text) return;
 
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch("submit/" + SESSION_ID, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, op: 'echo' })
@@ -128,7 +125,7 @@ toggleWssBtn.addEventListener("click", () => {
 // --- WebSocket Reconnection Logic ---
 
 function connectWebSocket() {
-  ws = new WebSocket(wsUrl);
+  ws = new WebSocket("ws/" + SESSION_ID);
 
   ws.onopen = () => {
     console.log("WebSocket connected");
