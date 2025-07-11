@@ -72,6 +72,24 @@ button:hover {
   padding: 0.25rem 0;
 }
 
+.response-label {
+  display: inline-block;
+  width: 60px;
+  height: 24px;
+  line-height: 24px;
+  margin-right: 10px;
+  text-align: center;
+  border-radius: 4px;
+  color: #333;
+}
+.response-label.https {
+  background-color: #d0eaff;
+}
+.response-label.wss {
+  background-color: #d8f6e6;
+}
+
+
 .hidden {
   display: none;
 }

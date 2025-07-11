@@ -4,7 +4,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from app.logger import get_logger
 from app.models import DataIn
-from app.settings import APP_ID
+from app.settings import APP_ID, redis
 from app.utils import make_return_txt, write_to_log
 
 
@@ -30,10 +30,11 @@ class ConnectionManager:
 
         await self.send_message(client_id)
 
-    def disconnect(self, client_id: str, websocket: WebSocket):
+    async def disconnect(self, client_id: str, websocket: WebSocket):
         self.active_connections[client_id].remove(websocket)
         if not self.active_connections[client_id]:
             del self.active_connections[client_id]
+            await redis.delete(client_id)
 
     async def send_message(self, client_id: str, message: str | None = None):
         if message is None:
@@ -77,4 +78,4 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
             await wsmanager.send_message(client_id, text)
 
     except WebSocketDisconnect:
-        wsmanager.disconnect(client_id, websocket)
+        await wsmanager.disconnect(client_id, websocket)

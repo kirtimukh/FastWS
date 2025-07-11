@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="static/style.css" />
   <script>
     const SESSION_ID = "{{ session_id }}";
+    const STICKY_STR = "{{ sticky_str }}"
   </script>
 </head>
 <body>
@@ -28,25 +29,17 @@
       <span id="ws-pid">Ws connection pid: </span>
     </div>
 
-    <form id="https-form">
-      <label for="https-input">HTTPS</label>
-      <input type="text" id="https-input" maxlength="140" required />
-      <button type="submit">Send HTTP</button>
-    </form>
+    <form id="the-form">
+      <label for="the-input">Send with HTTPS, receive with WSS</label>
+      <input type="text" id="the-input" maxlength="140" required />
+      <button type="submit" name="action" value="http-only">HTTP & Round Robin</button>
+      <button type="submit" name="action" value="http-sticky">HTTP & Sticky</button>
+      <button type="submit" name="action" value="ws-only">WebSockets Only</button>
 
-    <form id="ws-form">
-      <label for="ws-input">Websockets</label>
-      <input type="text" id="ws-input" maxlength="140" required />
-      <button type="submit">Send WS</button>
+      <button type="submit" name="action" value="with-redis">Publish Message to Queue</button>
+      <button type="submit" name="action" value="not-sticky">non-sticky HTTP & in-memory WebSockets</button>
+      <button type="submit" name="action" value="sticky">sticky HTTP & in-memory WebSockets</button>
     </form>
-
-    <form id="h2w-form">
-      <label for="h2w-input">Send with HTTPS, receive with WSS</label>
-      <input type="text" id="h2w-input" maxlength="140" required />
-      <button type="submit" name="action" value="without-redis">Send</button>
-      <button type="submit" name="action" value="with-redis">Send to Redis</button>
-    </form>
-
   </main>
 
   <script src="static/script.js"></script>

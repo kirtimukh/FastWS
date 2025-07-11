@@ -1,12 +1,11 @@
 console.log(SESSION_ID)
+console.log(STICKY_STR)
 
 let ws;
 let reconnectDelay = 1000;
 
 const responsesDiv = document.getElementById("responses");
-const httpsForm = document.getElementById("https-form");
-const wsForm = document.getElementById("ws-form");
-const h2wForm = document.getElementById("h2w-form");
+const theForm = document.getElementById("the-form");
 const toggleHttpsBtn = document.getElementById("toggle-https");
 const toggleWssBtn = document.getElementById("toggle-wss");
 
@@ -21,11 +20,20 @@ function displayMessages() {
     if ((msg.type === "https" && showHttps) || (msg.type === "wss" && showWss)) {
       const div = document.createElement("div");
       div.className = "response";
-      div.textContent = `${msg.type}: ${msg.text}`;
+
+      const label = document.createElement("span");
+      label.textContent = msg.type;
+      label.className = `response-label ${msg.type}`;
+
+      const text = document.createTextNode(msg.text);
+
+      div.appendChild(label);
+      div.appendChild(text);
       responsesDiv.appendChild(div);
     }
   });
 }
+
 
 function addMessage(type, text) {
   messages.push({ type, text });
@@ -38,35 +46,7 @@ function addMessage(type, text) {
 }
 
 // --- Form Handlers ---
-
-httpsForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const input = document.getElementById("https-input");
-  const text = input.value.trim();
-  if (!text) return;
-
-  try {
-    const response = await fetch("submit/" + SESSION_ID, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, op: 'echo' })
-    });
-
-    const result = await response.json();
-    addMessage("https", result.text);
-  } catch (err) {
-    console.error("HTTP error:", err);
-  }
-
-  input.value = "";
-});
-
-wsForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const input = document.getElementById("ws-input");
-  const text = input.value.trim();
-  if (!text) return;
-
+function wsSend(input, text) {
   if (ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify({ text, op: 'echo' }));
   } else {
@@ -74,26 +54,39 @@ wsForm.addEventListener("submit", (e) => {
   }
 
   input.value = "";
-});
+}
 
-h2wForm.addEventListener("submit", async (e) => {
+theForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const input = document.getElementById("h2w-input");
+  document.cookie = "StickyString=;";
+  const input = document.getElementById("the-input");
   const text = input.value.trim();
   if (!text) return;
 
   const clickedButton = e.submitter?.value;
 
-  let h2wUrl;
+  let theUrl;
 
-  if (clickedButton === "without-redis") {
-    h2wUrl = "without-redis/" + SESSION_ID;
-  } else {
-    h2wUrl = "with-redis/" + SESSION_ID;
+  if (clickedButton === "ws-only") {
+    wsSend(input, text); return;
+  }
+
+  if (clickedButton === "http-only") {
+    theUrl = "submit/" + SESSION_ID;
+  } else if (clickedButton === "http-sticky") {
+    document.cookie = `StickyString=${STICKY_STR};`
+    theUrl = "submit/" + SESSION_ID;
+  } else if (clickedButton === "with-redis") {
+    theUrl = "with-redis/" + SESSION_ID;
+  } else if (clickedButton === "not-sticky") {
+    theUrl = "without-redis/" + SESSION_ID;
+  } else if (clickedButton === "sticky") {
+    document.cookie = `StickyString=${STICKY_STR};`
+    theUrl = "without-redis/" + SESSION_ID;
   }
 
   try {
-    const response = await fetch(h2wUrl, {
+    const response = await fetch(theUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, op: 'echo' })
@@ -109,7 +102,6 @@ h2wForm.addEventListener("submit", async (e) => {
 });
 
 // --- Filtering ---
-
 toggleHttpsBtn.addEventListener("click", () => {
   showHttps = !showHttps;
   toggleHttpsBtn.style.opacity = showHttps ? "1" : "0.5";
@@ -123,7 +115,6 @@ toggleWssBtn.addEventListener("click", () => {
 });
 
 // --- WebSocket Reconnection Logic ---
-
 function connectWebSocket() {
   ws = new WebSocket("ws/" + SESSION_ID);
 

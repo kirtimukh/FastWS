@@ -1,4 +1,4 @@
-import json, random, string
+import json
 
 from fastapi import APIRouter
 from fastapi.requests import Request
@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 
 from app.models import DataIn
 from app.settings import APP_ID, REDIS_CHANNEL, redis
-from app.utils import make_return_txt, write_to_log
+from app.utils import make_client_id, make_return_txt, write_to_log
 from app.wsmanager import wsmanager
 
 
@@ -21,18 +21,23 @@ async def homepage(request: Request):
     Websocket connection begins **after** index.html in returned
     APP_ID 1 responding to client_id X doesn't guarantee X's websocket conn will be with APP_1
     """
-    client_id = ''.join(random.choices(string.ascii_lowercase, k=3))
-    return templates.TemplateResponse(
-        request=request, name="index.html", context={'session_id': client_id}
+    client_id = await make_client_id()
+    response = templates.TemplateResponse(
+        request=request, name="index.html",
+        context={'session_id': client_id, "sticky_str": f"{APP_ID}-sticky-string"}
     )
+    response.set_cookie("StickyString", f"{APP_ID}-sticky-string")
+    return response
 
 
 @router.post("/submit/{client_id}")
-async def http_echo(input: DataIn, client_id: str):
+async def http_echo(input: DataIn, client_id: str, request: Request):
     """
     Echoes back whatever text the user sends with http with http
     """
     write_to_log("http_echo", client_id, input.text)
+
+    print(request.cookies)
 
     return {'text': make_return_txt(input)}
 
