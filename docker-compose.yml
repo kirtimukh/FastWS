@@ -6,64 +6,73 @@ services:
     networks:
       - internal
 
-  app:
+  # app:
+  #   build:
+  #     context: .
+  #   ports:
+  #     - 8000:8000
+  #   volumes:
+  #     - .:/app
+  #   depends_on:
+  #     - redis
+  #   command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--workers", "4"]
+
+  #   networks:
+  #     - internal
+  
+  app1:
     build:
       context: .
-    ports:
-      - 8000:8000
-    volumes:
-      - .:/app
     depends_on:
       - redis
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--workers", "4"]
-
+    environment:
+      - APP_ID=app-1
+    volumes:
+      - ./records.log:/tmp/records.log
+      - ./app:/app/app
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
     networks:
       - internal
   
-  # app1:
-  #   build:
-  #     context: .
-  #   depends_on:
-  #     - redis
-  #   environment:
-  #     - APP_ID=app1
-  #   command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
-  #   networks:
-  #     - internal
-  
-  # app2:
-  #   build:
-  #     context: .
-  #   depends_on:
-  #     - redis
-  #   environment:
-  #     - APP_ID=app2
-  #   command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
-  #   networks:
-  #     - internal
+  app2:
+    build:
+      context: .
+    depends_on:
+      - redis
+    environment:
+      - APP_ID=app-2
+    volumes:
+      - ./records.log:/tmp/records.log
+      - ./app:/app/app
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    networks:
+      - internal
 
-  # app3:
-  #   build:
-  #     context: .
-  #   depends_on:
-  #     - redis
-  #   environment:
-  #     - APP_ID=app3
-  #   command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
-  #   networks:
-  #     - internal
+  app3:
+    build:
+      context: .
+    depends_on:
+      - redis
+    environment:
+      - APP_ID=app-3
+    volumes:
+      - ./records.log:/tmp/records.log
+      - ./app:/app/app
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    networks:
+      - internal
 
-  # nginx:
-  #   image: nginx:latest
-  #   ports:
-  #     - "8000:80"
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-  #   depends_on:
-  #     - app1
-  #     - app2
-  #   networks:
-  #     - internal
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app1
+      - app2
+    networks:
+      - internal
 
 volumes:
   redis_data:

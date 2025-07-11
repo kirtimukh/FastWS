@@ -1,7 +1,11 @@
 import json
-from fastapi import WebSocket
-from app.logger import get_logger, write_to_log
+
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
+from app.logger import get_logger
+from app.models import DataIn
 from app.settings import APP_ID
+from app.utils import make_return_txt, write_to_log
 
 
 logger = get_logger(__name__)
@@ -32,7 +36,6 @@ class ConnectionManager:
             del self.active_connections[client_id]
 
     async def send_message(self, client_id: str, message: str | None = None):
-        write_to_log("wsmanager", client_id, message)
         if message is None:
             msgdata = json.dumps({"websocket_pid": APP_ID})
         else:
@@ -41,6 +44,8 @@ class ConnectionManager:
         has_connection = False
 
         wsconns = self.active_connections.get(client_id, [])
+        if wsconns: write_to_log("wsmanager", client_id, message)
+        else: write_to_log("wsmanager", client_id, "<-- NOT CONNECTED -->")
         for websocket in wsconns:
             has_connection = True
             await websocket.send_text(msgdata)
@@ -49,3 +54,27 @@ class ConnectionManager:
 
 
 wsmanager = ConnectionManager()
+wsrouter = APIRouter()
+
+
+@wsrouter.websocket("/ws/{client_id}")
+async def websocket_endpoint(websocket: WebSocket, client_id: str):
+    """
+    Websocket conns are long lived
+    Once connection is made, this will keep listening for messages
+    Once CLIENT_X connects with APP_2, all future **websocket** messages from CLIENT_X will be received by APP_2.
+    """
+    await wsmanager.connect(websocket, client_id)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            data = json.loads(data)
+            input = DataIn(**data)
+
+            write_to_log("ws_echo", client_id, input.text)
+
+            text = make_return_txt(input)
+            await wsmanager.send_message(client_id, text)
+
+    except WebSocketDisconnect:
+        wsmanager.disconnect(client_id, websocket)

@@ -1,4 +1,2 @@
 __pycache__
 .venv/
-redis_data
-records.log

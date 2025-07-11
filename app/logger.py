@@ -8,7 +8,7 @@ class DevConfig:
     LOG_FORMAT: str = "%(service)s | %(asctime)s | %(message)s"
     LOG_LEVEL: str = "DEBUG"
     DATE_FORMAT: str = "%Y-%m-%d %H:%M:%S"
-    LOG_FILE: str = "records.log"
+    LOG_FILE: str = "/tmp/records.log"
     TXT_ONLY_FORMAT = "%(message)s"
 
 
@@ -62,13 +62,3 @@ def get_logger(service_name="default"):
     padded_name = service_name.ljust(NAME_LENGTH)
     logger = logging.LoggerAdapter(stdlogger, {"service": padded_name})
     return logger
-
-
-logger = get_logger()
-
-
-def write_to_log(method, client_id, text):
-    method = method.ljust(10)
-    pid = APP_ID.ljust(6)
-
-    logger.info(f"{method}| client [{client_id}] | {pid} : {text}")
