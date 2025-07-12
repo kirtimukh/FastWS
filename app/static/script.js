@@ -9,32 +9,22 @@ const responsesDiv = document.getElementById("responses");
 const theForm = document.getElementById("the-form");
 const toggleHttpsBtn = document.getElementById("toggle-https");
 const toggleWssBtn = document.getElementById("toggle-wss");
+const textInput = document.getElementById("the-input");
 
 let showHttps = true;
 let showWss = true;
 let messages = [];
 
-// function displayMessages() {
-//   responsesDiv.innerHTML = "";
+AUTOTEXTS = ["Pebblejoy", "Chipperdew", "Marzipip", "Jollywink", "Sunnydrop"]
 
-//   messages.forEach(msg => {
-//     if ((msg.type === "https" && showHttps) || (msg.type === "wss" && showWss)) {
-//       const div = document.createElement("div");
-//       div.className = "response";
+function getRandomPair() {
+  const shuffled = AUTOTEXTS.sort(() => 0.5 - Math.random());
+  return `${shuffled[0]} ${shuffled[1]}`;
+}
 
-//       const label = document.createElement("span");
-//       label.textContent = msg.type;
-//       label.className = `response-label ${msg.type}`;
-
-//       const text = document.createTextNode(msg.text);
-
-//       div.appendChild(label);
-//       div.appendChild(text);
-//       responsesDiv.appendChild(div);
-//     }
-//   });
-// }
-
+window.addEventListener("DOMContentLoaded", () => {
+  textInput.value = getRandomPair();
+});
 
 function addMessage(type, text) {
   const div = document.createElement("div");
@@ -51,37 +41,27 @@ function addMessage(type, text) {
 
   responsesDiv.appendChild(div);
   responsesDiv.scrollTop = responsesDiv.scrollHeight;
-
-  // messages.push({ type, text });
-
-  // if (messages.length > 100) {
-  //   messages.shift();
-  // }
-
-  // displayMessages();
 }
 
-// README.md
+// --- README.md ---
 theReadme.addEventListener("click", async () => {
   window.open("/readme", "_blank");
 })
 
 // --- Form Handlers ---
-function wsSend(input, text) {
+function wsSend(text) {
   if (ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify({ text, op: 'echo' }));
   } else {
     console.error("WebSocket not connected.");
   }
-
-  input.value = "";
 }
 
 theForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   document.cookie = "StickyStr=;";
-  const input = document.getElementById("the-input");
-  const text = input.value.trim();
+  const textInput = document.getElementById("the-input");
+  const text = textInput.value.trim();
   if (!text) return;
 
   const clickedButton = e.submitter?.value;
@@ -89,7 +69,9 @@ theForm.addEventListener("submit", async (e) => {
   let theUrl;
 
   if (clickedButton === "ws-only") {
-    wsSend(input, text); return;
+    wsSend(text);
+    textInput.value = getRandomPair()
+    return;
   }
 
   if (clickedButton === "http-only") {
@@ -120,7 +102,7 @@ theForm.addEventListener("submit", async (e) => {
     console.error("HTTP error:", err);
   }
 
-  input.value = "";
+  textInput.value = getRandomPair();
 });
 
 // --- Filtering ---
@@ -136,7 +118,7 @@ toggleWssBtn.addEventListener("click", () => {
   displayMessages();
 });
 
-// --- WebSocket Reconnection Logic ---
+// --- WebSocket Connection ---
 function connectWebSocket() {
   ws = new WebSocket("ws/" + SESSION_ID);
 
@@ -156,7 +138,7 @@ function connectWebSocket() {
       const span = document.getElementById("ws-pid");
 
       if (pid) {
-        span.textContent = "Ws connection pid: " + pid;
+        span.innerHTML = "Ws_connection: <strong>" + pid + "</strong>";
         span.style.display = "inline";  // or "block" depending on layout
       } else {
         span.style.display = "none";

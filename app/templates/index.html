@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Echo - Sticky Sessions</title>
+  <title>Echo</title>
   <link rel="stylesheet" href="static/style.css" />
   <script>
     const SESSION_ID = "{{ session_id }}";
@@ -13,7 +13,7 @@
 <body>
   <nav>
     <div class="title">
-      <h1>Sticky Sessions</h1>
+      <h1>HTTP Sticky</h1>
       <p>Handpick the service of your choosing</p>
     </div>
     <div class="doclink">
@@ -30,9 +30,9 @@
 
     <div id="responses" class="responses"></div>
     <div id="connections">
-      <label> Connections</label>
-      <span>client_id: {{session_id}}</span>
-      <span id="ws-pid">Ws connection pid: </span>
+      <span>page_by: <strong>{{page_by}}</strong></span>
+      <span>client_id: <strong>{{session_id}}</strong></span>
+      <span id="ws-pid">Ws_connection: </span>
     </div>
 
     <form id="the-form">

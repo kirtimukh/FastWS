@@ -1,4 +1,4 @@
-import json
+import json, random, string
 
 from fastapi import APIRouter
 from fastapi.requests import Request
@@ -22,11 +22,12 @@ async def homepage(request: Request):
     APP_ID 1 responding to client_id X doesn't guarantee X's websocket conn will be with APP_1
     """
     client_id = await make_client_id()
+    stickycookie = ''.join(random.choices(string.ascii_lowercase, k=8))
     response = templates.TemplateResponse(
         request=request, name="index.html",
-        context={'session_id': client_id, "sticky_str": f"{APP_ID}-sticky-string"}
+        context={'session_id': client_id, "sticky_str": f"{stickycookie}-by-{APP_ID}", "page_by": APP_ID}
     )
-    response.set_cookie("StickyStr", f"{APP_ID}-sticky-string")
+    response.set_cookie("StickyStr", f"{stickycookie}-by-{APP_ID}")
     return response
 
 
