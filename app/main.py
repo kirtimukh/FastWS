@@ -40,7 +40,7 @@ async def redis_subscriber():
             client_id = input_dict['client_id']
             input = DataIn(**input_dict)
 
-            write_to_log("Redis", client_id, input.text)
+            write_to_log("redis-app", client_id, input.text)
 
             text = make_return_txt(input)
             await wsmanager.send_message(client_id, text)
@@ -52,10 +52,10 @@ async def lifespan_manager(app: FastAPI):
     Runs on startup
     Set up the environment, dbconns, migrations here
     """
-    logger.info(f"lifespan  | Starting up with pid: {os.getpid()}")
+    logger.info(f"lifespan  | {APP_ID} starting up with pid: {os.getpid()}")
     asyncio.create_task(redis_subscriber())
     yield
-    logger.info("lifespan  | Shutting down. Bye bye.")
+    logger.info(f"lifespan  | {APP_ID} shutting down. Bye bye.")
 
 
 app = FastAPI(lifespan=lifespan_manager)

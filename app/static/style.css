@@ -6,11 +6,41 @@ body {
   text-align: center;
 }
 
-header {
+nav {
   background-color: #004466;
   color: white;
-  padding: 1rem 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
 }
+
+.title {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+nav h1 {
+  margin: 0;
+}
+
+.title p {
+  padding-top: 0.3rem;
+  padding-left: 1rem;
+  margin: 0;
+}
+
+.doclink {
+  padding-top: 0.3rem;
+  padding-right: 2rem;
+}
+
+.doclink p:hover {
+  color: black;
+  background-color: aqua;
+}
+
 
 main {
   padding: 2rem 1rem;
@@ -30,7 +60,11 @@ input[type="text"] {
   font-size: 1rem;
 }
 
-button {
+.filter-button:hover {
+  background-color: #006699;
+}
+
+.filter-button {
   padding: 0.5rem;
   background-color: #004466;
   color: white;
@@ -38,7 +72,55 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+.request-button {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 2.5rem 0.5rem 0.5rem; /* extra right padding for the [i] */
+  background-color: #004466;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.request-button .tooltip-icon {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-style: normal;
+  background-color: #fff;
+  color: black;
+  border-radius: 50%;
+  width: 1.2rem;
+  height: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+.request-button .tooltip-content {
+  display: none;
+  position: absolute;
+  top: 130%;
+  right: 0;
+  width: 250px;
+  padding: 1rem;
+  background-color: #fff;
+  color: black;
+  border-radius: 6px;
+  z-index: 10;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.request-button .tooltip-icon:hover + .tooltip-content {
+  display: block;
+}
+
+.request-button:hover {
   background-color: #006699;
 }
 

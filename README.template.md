@@ -17,7 +17,7 @@ Modern webapps are scalable, in some part, due to http connections being statele
   - it has to publish it to a **redis-like pubsub system**.
   - Similarly, it subscribes to the same queue for messages to clients whose WS-Connection it has in memory.
 
-![illustration of pubsub](/app/static/pubsub.png)
+![illustration of pubsub]({{PUBSUB_IMG}})
 
 ## The App
 
@@ -32,7 +32,7 @@ Modern webapps are scalable, in some part, due to http connections being statele
 
 ### Mode 2 ----------- 1-container-4-workers
 
-[![Demo video](Link to demo video)](https://github.com/user-attachments/assets/e9fa4af9-c5dd-40d2-b6d7-009bc9df5b2b)
+{{OLD_VIDEO_DEMO}}
 
 #### In the video:
 
@@ -49,7 +49,7 @@ The UI provides **4 ways to send message** to the server.
 
 ## Code implementation
 
-![illustration of sticky](/app/static/sticky.png)
+![illustration of sticky]({{STICKY_IMG}})
 
 ### Dependencies
 

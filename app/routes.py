@@ -26,8 +26,18 @@ async def homepage(request: Request):
         request=request, name="index.html",
         context={'session_id': client_id, "sticky_str": f"{APP_ID}-sticky-string"}
     )
-    response.set_cookie("StickyString", f"{APP_ID}-sticky-string")
+    response.set_cookie("StickyStr", f"{APP_ID}-sticky-string")
     return response
+
+
+@router.get("/readme", response_class=HTMLResponse)
+async def readme(request: Request):
+    """
+    Display the contents of the README.md in markdown format
+    """
+    return templates.TemplateResponse(
+        request=request, name="readme.html"
+    )
 
 
 @router.post("/submit/{client_id}")
@@ -35,7 +45,7 @@ async def http_echo(input: DataIn, client_id: str, request: Request):
     """
     Echoes back whatever text the user sends with http with http
     """
-    write_to_log("http_echo", client_id, input.text)
+    write_to_log("http-echo", client_id, input.text)
 
     print(request.cookies)
 
@@ -48,7 +58,7 @@ async def via_ws(input: DataIn, client_id: str):
     HTTP connections are ephemereal, stateless
     Any http request from user are not necessarily received by the worker that has the ws-connection
     """
-    write_to_log("via_ws", client_id, input.text)
+    write_to_log("http-ws", client_id, input.text)
 
     text = make_return_txt(input)
     has_connection = await wsmanager.send_message(client_id, text)
@@ -64,7 +74,7 @@ async def send_message(input: DataIn, client_id: str):
     """
     Publish messages to redis queue and any worker that has the ws-connection can respond
     """
-    write_to_log("Publish", client_id, input.text)
+    write_to_log("http-redis", client_id, input.text)
 
     input_dict = input.model_dump()
     input_dict['pid'] = APP_ID

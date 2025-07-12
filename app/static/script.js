@@ -4,6 +4,7 @@ console.log(STICKY_STR)
 let ws;
 let reconnectDelay = 1000;
 
+const theReadme = document.getElementById("link-to-md");
 const responsesDiv = document.getElementById("responses");
 const theForm = document.getElementById("the-form");
 const toggleHttpsBtn = document.getElementById("toggle-https");
@@ -13,37 +14,57 @@ let showHttps = true;
 let showWss = true;
 let messages = [];
 
-function displayMessages() {
-  responsesDiv.innerHTML = "";
+// function displayMessages() {
+//   responsesDiv.innerHTML = "";
 
-  messages.forEach(msg => {
-    if ((msg.type === "https" && showHttps) || (msg.type === "wss" && showWss)) {
-      const div = document.createElement("div");
-      div.className = "response";
+//   messages.forEach(msg => {
+//     if ((msg.type === "https" && showHttps) || (msg.type === "wss" && showWss)) {
+//       const div = document.createElement("div");
+//       div.className = "response";
 
-      const label = document.createElement("span");
-      label.textContent = msg.type;
-      label.className = `response-label ${msg.type}`;
+//       const label = document.createElement("span");
+//       label.textContent = msg.type;
+//       label.className = `response-label ${msg.type}`;
 
-      const text = document.createTextNode(msg.text);
+//       const text = document.createTextNode(msg.text);
 
-      div.appendChild(label);
-      div.appendChild(text);
-      responsesDiv.appendChild(div);
-    }
-  });
-}
+//       div.appendChild(label);
+//       div.appendChild(text);
+//       responsesDiv.appendChild(div);
+//     }
+//   });
+// }
 
 
 function addMessage(type, text) {
-  messages.push({ type, text });
+  const div = document.createElement("div");
+  div.className = "response";
 
-  if (messages.length > 100) {
-    messages.shift();
-  }
+  const labelNode = document.createElement("span");
+  labelNode.textContent = type;
+  labelNode.className = `response-label ${type}`;
 
-  displayMessages();
+  const textNode = document.createTextNode(text);
+
+  div.appendChild(labelNode);
+  div.appendChild(textNode);
+
+  responsesDiv.appendChild(div);
+  responsesDiv.scrollTop = responsesDiv.scrollHeight;
+
+  // messages.push({ type, text });
+
+  // if (messages.length > 100) {
+  //   messages.shift();
+  // }
+
+  // displayMessages();
 }
+
+// README.md
+theReadme.addEventListener("click", async () => {
+  window.open("/readme", "_blank");
+})
 
 // --- Form Handlers ---
 function wsSend(input, text) {
@@ -58,7 +79,7 @@ function wsSend(input, text) {
 
 theForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  document.cookie = "StickyString=;";
+  document.cookie = "StickyStr=;";
   const input = document.getElementById("the-input");
   const text = input.value.trim();
   if (!text) return;
@@ -74,14 +95,14 @@ theForm.addEventListener("submit", async (e) => {
   if (clickedButton === "http-only") {
     theUrl = "submit/" + SESSION_ID;
   } else if (clickedButton === "http-sticky") {
-    document.cookie = `StickyString=${STICKY_STR};`
+    document.cookie = `StickyStr=${STICKY_STR};`
     theUrl = "submit/" + SESSION_ID;
   } else if (clickedButton === "with-redis") {
     theUrl = "with-redis/" + SESSION_ID;
   } else if (clickedButton === "not-sticky") {
     theUrl = "without-redis/" + SESSION_ID;
   } else if (clickedButton === "sticky") {
-    document.cookie = `StickyString=${STICKY_STR};`
+    document.cookie = `StickyStr=${STICKY_STR};`
     theUrl = "without-redis/" + SESSION_ID;
   }
 
@@ -94,6 +115,7 @@ theForm.addEventListener("submit", async (e) => {
 
     const result = await response.json();
     addMessage("https", result.text);
+    document.cookie = "StickyStr=;";
   } catch (err) {
     console.error("HTTP error:", err);
   }
@@ -121,6 +143,7 @@ function connectWebSocket() {
   ws.onopen = () => {
     console.log("WebSocket connected");
     reconnectDelay = 1000; // reset delay
+    document.cookie = "StickyStr=;";
   };
 
   ws.onmessage = (event) => {

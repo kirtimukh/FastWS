@@ -1,0 +1,5 @@
+{
+    "OLD_VIDEO_DEMO": "<video controls width=\"480\"><source src=\"static/demo.mp4\" type=\"video/mp4\">Your browser does not support the video tag.</video>",
+    "PUBSUB_IMG": "static/pubsub.png",
+    "STICKY_IMG": "static/sticky.png"
+}

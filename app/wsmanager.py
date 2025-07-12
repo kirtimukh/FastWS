@@ -45,8 +45,8 @@ class ConnectionManager:
         has_connection = False
 
         wsconns = self.active_connections.get(client_id, [])
-        if wsconns: write_to_log("wsmanager", client_id, message)
-        else: write_to_log("wsmanager", client_id, "<-- NOT CONNECTED -->")
+        if wsconns: write_to_log("ws-send", client_id, message)
+        else: write_to_log("ws-send", client_id, "<-- unable to send message. no connection found. -->")
         for websocket in wsconns:
             has_connection = True
             await websocket.send_text(msgdata)
@@ -72,7 +72,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
             data = json.loads(data)
             input = DataIn(**data)
 
-            write_to_log("ws_echo", client_id, input.text)
+            write_to_log("ws-recv", client_id, input.text)
 
             text = make_return_txt(input)
             await wsmanager.send_message(client_id, text)
